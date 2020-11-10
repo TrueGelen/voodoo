@@ -85,7 +85,7 @@ module.exports = {
         options: {
           name: '[name].[ext]',
           // outputPath: `../${PATHS.static}/fonts/`
-          outputPath: `/${PATHS.static}/svg/`,
+          outputPath: `${PATHS.static}/svg/`,
           // publicPath: `${PATHS.static}/svg/`
         }
       },
