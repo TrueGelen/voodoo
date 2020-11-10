@@ -1,0 +1,48 @@
+@import './smart-grid.sass';
+@import './vars.scss';
+@import '_fonts';
+
+*{
+  box-sizing: border-box;
+}
+
+html{
+  font-size: 20px;
+
+  @media screen and (max-width: 1366px){
+    font-size: 16px;
+  }
+
+  @include xs(font-size, 2.6vw);
+  @include xxs(font-size, 3.5vw);
+}
+
+menu, h1, h2, ul, li{
+	margin: 0;
+	padding: 0;	
+}
+
+ul{
+	list-style: none;
+}
+
+a{
+	text-decoration: none;
+	color: inherit;
+}
+
+// .noselect {
+//   -webkit-touch-callout: none; /* iOS Safari */
+//     -webkit-user-select: none; /* Safari */
+//      -khtml-user-select: none; /* Konqueror HTML */
+//        -moz-user-select: none; /* Firefox */
+//         -ms-user-select: none; /* Internet Explorer/Edge */
+//             user-select: none; /* Non-prefixed version, currently
+//                                   supported by Chrome and Opera */
+// }
+
+body{
+  position: relative;
+  background-color: rgb(241, 235, 235);
+  min-height: 100vh;
+}
