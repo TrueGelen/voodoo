@@ -1,5 +1,5 @@
 /* libs */
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 /* components */
 import Card from 'react-bootstrap/Card'
 import searchSvg from '../../svg/search.svg'
@@ -10,6 +10,7 @@ function App(props) {
 
   const [search, setSearch] = useState("")
   const [posts, setPosts] = useState([])
+  const [authors, setAuthors] = useState([])
   const [fetchErr, setFetchErr] = useState(false)
 
   useEffect(() => {
@@ -19,8 +20,10 @@ function App(props) {
         posts = await posts.json()
         let authors = await fetch('https://jsonplaceholder.typicode.com/users?_limit=4')
         authors = await authors.json()
-        posts.forEach(post => post.author = authors[Math.floor(Math.random() * 4)].name)
 
+        posts.forEach(post => post.userId = authors[Math.floor(Math.random() * 4)].id)
+
+        setAuthors(authors)
         setPosts(posts)
       } catch (e) {
         setFetchErr(true)
@@ -28,35 +31,40 @@ function App(props) {
     }
     fetchData()
   }, [])
+  // console.log(authors, posts)
 
-  let arrPostElements = []
-  posts.forEach(post => {
-    if (search) {
-      if (post.author.toLowerCase().includes(search.toLowerCase())) {
-        arrPostElements.push(
-          <div key={post.id} className="col-12 mt-4 col-md-6 col-lg-4">
-            <Card border="secondary" >
-              <Card.Header>{post.author}</Card.Header>
-              <Card.Body>
-                <Card.Title>{post.title}</Card.Title>
-                <Card.Text>{post.body}</Card.Text>
-              </Card.Body>
-            </Card>
-          </div>)
-      }
-    } else {
-      arrPostElements.push(
-        <div key={post.id} className="col-12 mt-4 col-md-6 col-lg-4">
-          <Card border="secondary" >
-            <Card.Header>{post.author}</Card.Header>
-            <Card.Body>
-              <Card.Title>{post.title}</Card.Title>
-              <Card.Text>{post.body}</Card.Text>
-            </Card.Body>
-          </Card>
-        </div>)
+  let data = useMemo(() => {
+    let arr = []
+
+    const templateMaker = (post = null) => {
+      arr.push(<div key={post.id} className="col-12 mt-4 col-md-6 col-lg-4">
+        <Card border="secondary" >
+          <Card.Header>{authors[post.userId - 1].name}</Card.Header>
+          <Card.Body>
+            <Card.Title>{post.title}</Card.Title>
+            <Card.Text>{post.body}</Card.Text>
+          </Card.Body>
+        </Card>
+      </div>)
     }
-  })
+
+    posts.forEach(post => {
+      if (search) {
+        if (authors[post.userId - 1].name.toLowerCase().includes(search.toLowerCase())) {
+          templateMaker(post)
+        } else {
+        }
+      } else {
+        templateMaker(post)
+      }
+
+    })
+
+    if (fetchErr)
+      return <p className={md.badRequest}>Не удалось получить данные с сервера :(</p>
+    else
+      return arr.length ? arr : <p>По вашему запросу ничего не найдено</p>
+  }, [search, posts, fetchErr])
 
   const onSearch = () => setSearch(search)
   const onCha = (e) => setSearch(e.target.value)
@@ -81,12 +89,7 @@ function App(props) {
       {/* content */}
       <main className="container">
         <div className="row flex-wrap">
-          {
-            !fetchErr ?
-              arrPostElements.length && arrPostElements
-              :
-              <p className={md.badRequest}>Не удалось получить данные с сервера :(</p>
-          }
+          {data}
         </div>
       </main>
     </>
